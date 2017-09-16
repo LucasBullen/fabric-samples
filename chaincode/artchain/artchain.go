@@ -89,7 +89,7 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	return shim.Error("Invalid Smart Contract function name. %s GGGG", function)
 }
 
-func (s *SmartContract) queryArt(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+func (s *SmartContract) queryArtById(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 
 	if len(args) != 1 {
 		return shim.Error("Incorrect number of arguments. Expecting 1")
@@ -139,7 +139,7 @@ func (s *SmartContract) list(APIstub shim.ChaincodeStubInterface, args []string)
 	return shim.Success(nil)
 }
 
-func (s *SmartContract) queryArtById(APIstub shim.ChaincodeStubInterface) sc.Response {
+func (s *SmartContract) queryAllArt(APIstub shim.ChaincodeStubInterface) sc.Response {
 	// TODO: this might be bad, do not know yet how query works
 	startKey := "000000000000000000000000000000000"
 	endKey := "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
