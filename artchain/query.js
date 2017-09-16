@@ -8,6 +8,12 @@
  * Hyperledger Fabric Sample Query Program
  */
 
+
+//queryArtById
+//queryAllArt
+var fcn_param = 'queryArt';
+var args_param = ['6b86b273ff34fce19d6b804eff5a3f574'];
+
 var hfc = require('fabric-client');
 var path = require('path');
 
@@ -15,7 +21,7 @@ var options = {
     wallet_path: path.join(__dirname, './creds'),
     user_id: 'PeerAdmin',
     channel_id: 'mychannel',
-    chaincode_id: 'artchain',
+    chaincode_id: 'artChain',
     network_url: 'grpc://localhost:7051',
 };
 
@@ -42,14 +48,11 @@ Promise.resolve().then(() => {
     console.log("Make query");
     var transaction_id = client.newTransactionID();
     console.log("Assigning transaction_id: ", transaction_id._transaction_id);
-
-    // queryCar - requires 1 argument, ex: args: ['CAR4'],
-    // queryAllCars - requires no arguments , ex: args: [''],
     const request = {
         chaincodeId: options.chaincode_id,
         txId: transaction_id,
-        fcn: 'queryAllCars',
-        args: ['']
+        fcn: fcn_param,
+        args: args_param
     };
     return channel.queryByChaincode(request);
 }).then((query_responses) => {

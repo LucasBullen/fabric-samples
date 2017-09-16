@@ -7,6 +7,13 @@
 /*
  * Chaincode Invoke
  */
+//list
+//purchase
+//setStatus
+//setPrice
+var fcn_param = 'changeCarOwner';
+var args_param = ['CAR10', 'Lucas'];
+
 
 var hfc = require('fabric-client');
 var path = require('path');
@@ -16,7 +23,7 @@ var options = {
     wallet_path: path.join(__dirname, './creds'),
     user_id: 'PeerAdmin',
     channel_id: 'mychannel',
-    chaincode_id: 'artchain',
+    chaincode_id: 'artChain',
     peer_url: 'grpc://localhost:7051',
     event_url: 'grpc://localhost:7053',
     orderer_url: 'grpc://localhost:7050'
@@ -48,14 +55,11 @@ Promise.resolve().then(() => {
 }).then(() => {
     tx_id = client.newTransactionID();
     console.log("Assigning transaction_id: ", tx_id._transaction_id);
-    // createCar - requires 5 args, ex: args: ['CAR11', 'Honda', 'Accord', 'Black', 'Tom'],
-    // changeCarOwner - requires 2 args , ex: args: ['CAR10', 'Barry'],
-    // send proposal to endorser
     var request = {
         targets: targets,
         chaincodeId: options.chaincode_id,
-        fcn: 'createCar',
-        args: ['CAR10', 'Chevy', 'Volt', 'Red', 'Nick'],
+        fcn: fcn_param,
+        args: args_param,
         chainId: options.channel_id,
         txId: tx_id
     };

@@ -32,7 +32,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"strconv"
+//	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	sc "github.com/hyperledger/fabric/protos/peer"
@@ -49,8 +49,8 @@ type Art struct {
 	Author string `json:"author"`
 	Description string `json:"description"`
 	OwnerID  string `json:"owner_id"`
-	BcnValue  float64 `json:"bcn_value"`
-	IsListed  bool `json:"is_listed"`
+	BcnValue  string `json:"bcn_value"`
+	IsListed  string `json:"is_listed"`
 }
 
 /*
@@ -70,8 +70,8 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	// Retrieve the requested Smart Contract function and arguments
 	function, args := APIstub.GetFunctionAndParameters()
 	// Route to the appropriate handler function to interact with the ledger appropriately
-	if function == "queryArtByName" {
-		return s.queryArt(APIstub, args)
+	if function == "queryArtById" {
+		return s.queryArtById(APIstub, args)
 	} else if function == "initLedger" {
 		return s.initLedger(APIstub)
 	} else if function == "list" {
@@ -104,13 +104,13 @@ func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Respo
 		"6b86b273ff34fce19d6b804eff5a3f574",
 		"d4735e3a265e16eee03f59718b9b5d030",
 		"d16b72230967de01f640b7e4729b49fce",
-		"0ce05c1decfe3ad16b72230967de01f64"
+		"0ce05c1decfe3ad16b72230967de01f64",
 	}
 	art := []Art{
-		Art{ Name: "Wolf", 	Author: "Shimhaq", Description: "A colorful image of a wolf", 	OwnerID: "VFFqVNdyrHzAhFy76QkCFPgowMj8Dc8Jr", BcnValue: 0.13, IsListed: true},
-		Art{ Name: "Owl", 	Author: "Shimhaq", Description: "A colorful image of an owl", 	OwnerID: "VFFqVNdyrHzAhFy76QkCFPgowMj8Dc8Jr", BcnValue: 0.03, IsListed: false},
-		Art{ Name: "Horse", Author: "Shimhaq", Description: "A colorful image of a horse", 	OwnerID: "VFFqVNdyrHzAhFy76QkCFPgowMj8Dc8Jr", BcnValue: 0.1, IsListed: true},
-		Art{ Name: "Lion", 	Author: "Shimhaq", Description: "A colorful image of a lion", 	OwnerID: "VFFqVNdyrHzAhFy76QkCFPgowMj8Dc8Jr", BcnValue: 0.2, IsListed: true},
+		Art{ Name: "Wolf", 	Author: "Shimhaq", Description: "A colorful image of a wolf", 	OwnerID: "VFFqVNdyrHzAhFy76QkCFPgowMj8Dc8Jr", BcnValue: "0.13", IsListed: "true"},
+		Art{ Name: "Owl", 	Author: "Shimhaq", Description: "A colorful image of an owl", 	OwnerID: "VFFqVNdyrHzAhFy76QkCFPgowMj8Dc8Jr", BcnValue: "0.03", IsListed: "false"},
+		Art{ Name: "Horse", Author: "Shimhaq", Description: "A colorful image of a horse", 	OwnerID: "VFFqVNdyrHzAhFy76QkCFPgowMj8Dc8Jr", BcnValue: "0.1", IsListed: "true"},
+		Art{ Name: "Lion", 	Author: "Shimhaq", Description: "A colorful image of a lion", 	OwnerID: "VFFqVNdyrHzAhFy76QkCFPgowMj8Dc8Jr", BcnValue: "0.2", IsListed: "true"},
 	}
 
 	i := 0
@@ -139,7 +139,7 @@ func (s *SmartContract) list(APIstub shim.ChaincodeStubInterface, args []string)
 	return shim.Success(nil)
 }
 
-func (s *SmartContract) queryAllArt(APIstub shim.ChaincodeStubInterface) sc.Response {
+func (s *SmartContract) queryArtById(APIstub shim.ChaincodeStubInterface) sc.Response {
 	// TODO: this might be bad, do not know yet how query works
 	startKey := "000000000000000000000000000000000"
 	endKey := "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
