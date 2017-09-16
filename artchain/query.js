@@ -14,8 +14,8 @@ var path = require('path');
 var options = {
     wallet_path: path.join(__dirname, './creds'),
     user_id: 'PeerAdmin',
-    channel_id: 'mychannel',
-    chaincode_id: 'fabcar',
+    channel_id: 'artchannel',
+    chaincode_id: 'artchain',
     network_url: 'grpc://localhost:7051',
 };
 
