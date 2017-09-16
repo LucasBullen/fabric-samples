@@ -84,19 +84,11 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 		return s.setStatus(APIstub, args)
 	} else if function == "setPrice" {
 		return s.setPrice(APIstub, args)
+	}else if function == "queryArtById" {
+		return s.queryArtById(APIstub, args)
 	}
 
 	return shim.Error("Invalid Smart Contract function name. %s GGGG", function)
-}
-
-func (s *SmartContract) queryArtById(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-
-	if len(args) != 1 {
-		return shim.Error("Incorrect number of arguments. Expecting 1")
-	}
-
-	artAsBytes, _ := APIstub.GetState(args[0])
-	return shim.Success(artAsBytes)
 }
 
 func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Response {
@@ -123,6 +115,16 @@ func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Respo
 	}
 
 	return shim.Success(nil)
+}
+
+func (s *SmartContract) queryArtById(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+
+	if len(args) != 1 {
+		return shim.Error("Incorrect number of arguments. Expecting 1")
+	}
+
+	artAsBytes, _ := APIstub.GetState(args[0])
+	return shim.Success(artAsBytes)
 }
 
 func (s *SmartContract) list(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {

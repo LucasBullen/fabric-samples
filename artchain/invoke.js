@@ -11,8 +11,8 @@
 //purchase
 //setStatus
 //setPrice
-var fcn_param = 'changeCarOwner';
-var args_param = ['CAR10', 'Lucas'];
+var fcn_param = 'setPrice';
+var args_param = ['6b86b273ff34fce19d6b804eff5a3f574', '1'];
 
 
 var hfc = require('fabric-client');
