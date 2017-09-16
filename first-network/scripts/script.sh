@@ -11,7 +11,7 @@ echo "Build your first network (BYFN) end-to-end test"
 echo
 CHANNEL_NAME="$1"
 DELAY="$2"
-: ${CHANNEL_NAME:="artchannel"}
+: ${CHANNEL_NAME:="mychannel"}
 : ${TIMEOUT:="60"}
 COUNTER=1
 MAX_RETRY=5

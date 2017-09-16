@@ -15,7 +15,7 @@ var util = require('util');
 var options = {
     wallet_path: path.join(__dirname, './creds'),
     user_id: 'PeerAdmin',
-    channel_id: 'artchannel',
+    channel_id: 'mychannel',
     chaincode_id: 'artchain',
     peer_url: 'grpc://localhost:7051',
     event_url: 'grpc://localhost:7053',

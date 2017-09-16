@@ -22,7 +22,7 @@ Once you have completed the above setup, you will have provisioned a local netwo
 
 #### Artifacts
 * Crypto material has been generated using the **cryptogen** tool from Hyperledger Fabric and mounted to all peers, the orderering node and CA containers. More details regarding the cryptogen tool are available [here](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html#crypto-generator).
-* An Orderer genesis block (genesis.block) and channel configuration transaction (artchannel.tx) has been pre generated using the **configtxgen** tool from Hyperledger Fabric and placed within the artifacts folder. More details regarding the configtxgen tool are available [here](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html#configuration-transaction-generator).
+* An Orderer genesis block (genesis.block) and channel configuration transaction (mychannel.tx) has been pre generated using the **configtxgen** tool from Hyperledger Fabric and placed within the artifacts folder. More details regarding the configtxgen tool are available [here](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html#configuration-transaction-generator).
 
 ## Running the sample program
 
@@ -115,8 +115,8 @@ curl -s -X POST \
   -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0OTQ4NjU1OTEsInVzZXJuYW1lIjoiSmltIiwib3JnTmFtZSI6Im9yZzEiLCJpYXQiOjE0OTQ4NjE5OTF9.yWaJhFDuTvMQRaZIqg20Is5t-JJ_1BP58yrNLOKxtNI" \
   -H "content-type: application/json" \
   -d '{
-	"channelName":"artchannel",
-	"channelConfigPath":"../artifacts/channel/artchannel.tx"
+	"channelName":"mychannel",
+	"channelConfigPath":"../artifacts/channel/mychannel.tx"
 }'
 ```
 
@@ -126,7 +126,7 @@ Please note that the Header **authorization** must contain the JWT returned from
 
 ```
 curl -s -X POST \
-  http://localhost:4000/channels/artchannel/peers \
+  http://localhost:4000/channels/mychannel/peers \
   -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0OTQ4NjU1OTEsInVzZXJuYW1lIjoiSmltIiwib3JnTmFtZSI6Im9yZzEiLCJpYXQiOjE0OTQ4NjE5OTF9.yWaJhFDuTvMQRaZIqg20Is5t-JJ_1BP58yrNLOKxtNI" \
   -H "content-type: application/json" \
   -d '{
@@ -152,7 +152,7 @@ curl -s -X POST \
 
 ```
 curl -s -X POST \
-  http://localhost:4000/channels/artchannel/chaincodes \
+  http://localhost:4000/channels/mychannel/chaincodes \
   -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0OTQ4NjU1OTEsInVzZXJuYW1lIjoiSmltIiwib3JnTmFtZSI6Im9yZzEiLCJpYXQiOjE0OTQ4NjE5OTF9.yWaJhFDuTvMQRaZIqg20Is5t-JJ_1BP58yrNLOKxtNI" \
   -H "content-type: application/json" \
   -d '{
@@ -166,7 +166,7 @@ curl -s -X POST \
 
 ```
 curl -s -X POST \
-  http://localhost:4000/channels/artchannel/chaincodes/mycc \
+  http://localhost:4000/channels/mychannel/chaincodes/mycc \
   -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0OTQ4NjU1OTEsInVzZXJuYW1lIjoiSmltIiwib3JnTmFtZSI6Im9yZzEiLCJpYXQiOjE0OTQ4NjE5OTF9.yWaJhFDuTvMQRaZIqg20Is5t-JJ_1BP58yrNLOKxtNI" \
   -H "content-type: application/json" \
   -d '{
@@ -180,7 +180,7 @@ curl -s -X POST \
 
 ```
 curl -s -X GET \
-  "http://localhost:4000/channels/artchannel/chaincodes/mycc?peer=peer1&fcn=query&args=%5B%22a%22%5D" \
+  "http://localhost:4000/channels/mychannel/chaincodes/mycc?peer=peer1&fcn=query&args=%5B%22a%22%5D" \
   -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0OTQ4NjU1OTEsInVzZXJuYW1lIjoiSmltIiwib3JnTmFtZSI6Im9yZzEiLCJpYXQiOjE0OTQ4NjE5OTF9.yWaJhFDuTvMQRaZIqg20Is5t-JJ_1BP58yrNLOKxtNI" \
   -H "content-type: application/json"
 ```
@@ -189,7 +189,7 @@ curl -s -X GET \
 
 ```
 curl -s -X GET \
-  "http://localhost:4000/channels/artchannel/blocks/1?peer=peer1" \
+  "http://localhost:4000/channels/mychannel/blocks/1?peer=peer1" \
   -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0OTQ4NjU1OTEsInVzZXJuYW1lIjoiSmltIiwib3JnTmFtZSI6Im9yZzEiLCJpYXQiOjE0OTQ4NjE5OTF9.yWaJhFDuTvMQRaZIqg20Is5t-JJ_1BP58yrNLOKxtNI" \
   -H "content-type: application/json"
 ```
@@ -197,7 +197,7 @@ curl -s -X GET \
 ### Query Transaction by TransactionID
 
 ```
-curl -s -X GET http://localhost:4000/channels/artchannel/transactions/TRX_ID?peer=peer1 \
+curl -s -X GET http://localhost:4000/channels/mychannel/transactions/TRX_ID?peer=peer1 \
   -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0OTQ4NjU1OTEsInVzZXJuYW1lIjoiSmltIiwib3JnTmFtZSI6Im9yZzEiLCJpYXQiOjE0OTQ4NjE5OTF9.yWaJhFDuTvMQRaZIqg20Is5t-JJ_1BP58yrNLOKxtNI" \
   -H "content-type: application/json"
 ```
@@ -208,7 +208,7 @@ curl -s -X GET http://localhost:4000/channels/artchannel/transactions/TRX_ID?pee
 
 ```
 curl -s -X GET \
-  "http://localhost:4000/channels/artchannel?peer=peer1" \
+  "http://localhost:4000/channels/mychannel?peer=peer1" \
   -H "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0OTQ4NjU1OTEsInVzZXJuYW1lIjoiSmltIiwib3JnTmFtZSI6Im9yZzEiLCJpYXQiOjE0OTQ4NjE5OTF9.yWaJhFDuTvMQRaZIqg20Is5t-JJ_1BP58yrNLOKxtNI" \
   -H "content-type: application/json"
 ```
