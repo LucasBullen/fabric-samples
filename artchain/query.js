@@ -11,7 +11,7 @@
 
 //queryArtById
 //queryAllArt
-var fcn_param = 'queryArt';
+var fcn_param = 'queryArtById';
 var args_param = ['6b86b273ff34fce19d6b804eff5a3f574'];
 
 var hfc = require('fabric-client');
@@ -21,7 +21,7 @@ var options = {
     wallet_path: path.join(__dirname, './creds'),
     user_id: 'PeerAdmin',
     channel_id: 'mychannel',
-    chaincode_id: 'artChain',
+    chaincode_id: 'artchain',
     network_url: 'grpc://localhost:7051',
 };
 
@@ -45,7 +45,7 @@ Promise.resolve().then(() => {
     channel.addPeer(client.newPeer(options.network_url));
     return;
 }).then(() => {
-    console.log("Make query");
+    console.log("Make query:", fcn_param);
     var transaction_id = client.newTransactionID();
     console.log("Assigning transaction_id: ", transaction_id._transaction_id);
     const request = {

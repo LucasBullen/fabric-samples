@@ -86,7 +86,7 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 		return s.setPrice(APIstub, args)
 	}
 
-	return shim.Error("Invalid Smart Contract function name.")
+	return shim.Error("Invalid Smart Contract function name. %s GGGG", function)
 }
 
 func (s *SmartContract) queryArt(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
