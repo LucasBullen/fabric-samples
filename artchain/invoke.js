@@ -11,8 +11,9 @@
 //purchase
 //setStatus
 //setPrice
-var fcn_param = 'setPrice';
-var args_param = ['6b86b273ff34fce19d6b804eff5a3f574', '1'];
+var invoke = function(functionString,args,callback){
+var fcn_param = functionString;
+var args_param = args;//['6b86b273ff34fce19d6b804eff5a3f574', 'true'];
 
 
 var hfc = require('fabric-client');
@@ -34,17 +35,17 @@ var client = null;
 var targets = [];
 var tx_id = null;
 Promise.resolve().then(() => {
-    console.log("Create a client and set the wallet location");
+//    console.log("Create a client and set the wallet location");
     client = new hfc();
     return hfc.newDefaultKeyValueStore({ path: options.wallet_path });
 }).then((wallet) => {
-    console.log("Set wallet path, and associate user ", options.user_id, " with application");
+  //  console.log("Set wallet path, and associate user ", options.user_id, " with application");
     client.setStateStore(wallet);
     return client.getUserContext(options.user_id, true);
 }).then((user) => {
-    console.log("Check user is enrolled, and set a query URL in the network");
+    //console.log("Check user is enrolled, and set a query URL in the network");
     if (user === undefined || user.isEnrolled() === false) {
-        console.error("User not defined, or not enrolled - error");
+       console.error("false"); //console.error("User not defined, or not enrolled - error");
     }
     channel = client.newChannel(options.channel_id);
     var peerObj = client.newPeer(options.peer_url);
@@ -54,7 +55,7 @@ Promise.resolve().then(() => {
     return;
 }).then(() => {
     tx_id = client.newTransactionID();
-    console.log("Assigning transaction_id: ", tx_id._transaction_id);
+   // console.log("Assigning transaction_id: ", tx_id._transaction_id);
     var request = {
         targets: targets,
         chaincodeId: options.chaincode_id,
@@ -72,15 +73,16 @@ Promise.resolve().then(() => {
     if (proposalResponses && proposalResponses[0].response &&
         proposalResponses[0].response.status === 200) {
         isProposalGood = true;
-        console.log('transaction proposal was good');
+     //   console.log('transaction proposal was good');
     } else {
-        console.error('transaction proposal was bad');
+    callback("false");
+      console.error("false"); // console.error('transaction proposal was bad');
     }
     if (isProposalGood) {
-        console.log(util.format(
-            'Successfully sent Proposal and received ProposalResponse: Status - %s, message - "%s", metadata - "%s", endorsement signature: %s',
-            proposalResponses[0].response.status, proposalResponses[0].response.message,
-            proposalResponses[0].response.payload, proposalResponses[0].endorsement.signature));
+       //console.error("true");// console.log(util.format(
+       //     'Successfully sent Proposal and received ProposalResponse: Status - %s, message - "%s", metadata - "%s", endorsement signature: %s',
+         //   proposalResponses[0].response.status, proposalResponses[0].response.message,
+          //  proposalResponses[0].response.payload, proposalResponses[0].endorsement.signature));
         var request = {
             proposalResponses: proposalResponses,
             proposal: proposal,
@@ -107,13 +109,14 @@ Promise.resolve().then(() => {
                 eh.disconnect();
 
                 if (code !== 'VALID') {
-                    console.error(
+                    callback("false");
+			console.error(
                         'The transaction was invalid, code = ' + code);
                     reject();
                 } else {
-                    console.log(
-                        'The transaction has been committed on peer ' +
-                        eh._ep._endpoint.addr);
+                    //console.log("true");
+                        //'The transaction has been committed on peer ' +
+                        //eh._ep._endpoint.addr);
                     resolve();
                 }
             });
@@ -121,29 +124,33 @@ Promise.resolve().then(() => {
         eventPromises.push(txPromise);
         var sendPromise = channel.sendTransaction(request);
         return Promise.all([sendPromise].concat(eventPromises)).then((results) => {
-            console.log(' event promise all complete and testing complete');
+            //console.log("true");//' event promise all complete and testing complete');
             return results[0]; // the first returned value is from the 'sendPromise' which is from the 'sendTransaction()' call
         }).catch((err) => {
             console.error(
                 'Failed to send transaction and get notifications within the timeout period.'
             );
+		callback("false");
             return 'Failed to send transaction and get notifications within the timeout period.';
         });
     } else {
         console.error(
             'Failed to send Proposal or receive valid response. Response null or status is not 200. exiting...'
         );
+		callback("false");
         return 'Failed to send Proposal or receive valid response. Response null or status is not 200. exiting...';
     }
 }, (err) => {
     console.error('Failed to send proposal due to error: ' + err.stack ? err.stack :
         err);
+callback("false");
     return 'Failed to send proposal due to error: ' + err.stack ? err.stack :
         err;
 }).then((response) => {
     if (response.status === 'SUCCESS') {
-        console.log('Successfully sent transaction to the orderer.');
-        return tx_id.getTransactionID();
+	callback("true");
+        console.log("true");//'Successfully sent transaction to the orderer.');
+        return  tx_id.getTransactionID();
     } else {
         console.error('Failed to order the transaction. Error code: ' + response.status);
         return 'Failed to order the transaction. Error code: ' + response.status;
@@ -151,6 +158,10 @@ Promise.resolve().then(() => {
 }, (err) => {
     console.error('Failed to send transaction due to error: ' + err.stack ? err
         .stack : err);
+callback("false");
     return 'Failed to send transaction due to error: ' + err.stack ? err.stack :
         err;
 });
+};
+
+module.exports.invoke=invoke;

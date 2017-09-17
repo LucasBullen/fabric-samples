@@ -51,6 +51,10 @@ type Art struct {
 	OwnerID  string `json:"owner_id"`
 	BcnValue  string `json:"bcn_value"`
 	IsListed  string `json:"is_listed"`
+	AuctionStartTime  string `json:"start_time"`
+	AuctionEndTime  string `json:"end_time"`
+	HighestBidderId  string `json:"highest_bidder_id"`
+	StartingBid  string `json:"starting_bid"`
 }
 
 /*
@@ -78,17 +82,17 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 		return s.list(APIstub, args)
 	} else if function == "queryAllArt" {
 		return s.queryAllArt(APIstub)
-	} else if function == "purchase" {
-		return s.purchase(APIstub, args)
 	} else if function == "setStatus" {
 		return s.setStatus(APIstub, args)
 	} else if function == "setPrice" {
 		return s.setPrice(APIstub, args)
-	}else if function == "queryArtById" {
-		return s.queryArtById(APIstub, args)
+	} else if function == "setUpAuction" { 	//artid, auctionstartTime auctionEndTime, startingbid
+		return s.setUpAuction(APIstub, args)
+	} else if function == "bid" {			//artid, userid, bcn_ammount
+		return s.bid(APIstub, args)
 	}
 
-	return shim.Error("Invalid Smart Contract function name. %s GGGG", function)
+	return shim.Error("Invalid Smart Contract function name.")
 }
 
 func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Response {
@@ -99,10 +103,10 @@ func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Respo
 		"0ce05c1decfe3ad16b72230967de01f64",
 	}
 	art := []Art{
-		Art{ Name: "Wolf", 	Author: "Shimhaq", Description: "A colorful image of a wolf", 	OwnerID: "VFFqVNdyrHzAhFy76QkCFPgowMj8Dc8Jr", BcnValue: "0.13", IsListed: "true"},
-		Art{ Name: "Owl", 	Author: "Shimhaq", Description: "A colorful image of an owl", 	OwnerID: "VFFqVNdyrHzAhFy76QkCFPgowMj8Dc8Jr", BcnValue: "0.03", IsListed: "false"},
-		Art{ Name: "Horse", Author: "Shimhaq", Description: "A colorful image of a horse", 	OwnerID: "VFFqVNdyrHzAhFy76QkCFPgowMj8Dc8Jr", BcnValue: "0.1", IsListed: "true"},
-		Art{ Name: "Lion", 	Author: "Shimhaq", Description: "A colorful image of a lion", 	OwnerID: "VFFqVNdyrHzAhFy76QkCFPgowMj8Dc8Jr", BcnValue: "0.2", IsListed: "true"},
+		Art{ Name: "Wolf", 	Author: "Shimhaq", Description: "A colorful image of a wolf", 	OwnerID: "1MJY4td932qmFxH6FBQrpnySZBizV67rRC", BcnValue: "0.13", IsListed: "true", 	AuctionStartTime: "1505591349", AuctionEndTime: "1508184000", HighestBidderId: "1MJY4td932qmFxH6FBQrpnySZBizV67rRC", StartingBid: "0.02"},
+		Art{ Name: "Owl", 	Author: "Shimhaq", Description: "A colorful image of an owl", 	OwnerID: "1MJY4td932qmFxH6FBQrpnySZBizV67rRC", BcnValue: "0.03", IsListed: "false", 	AuctionStartTime: "", AuctionEndTime: "", HighestBidderId: "", StartingBid: ""},
+		Art{ Name: "Horse", Author: "Shimhaq", Description: "A colorful image of a horse", 	OwnerID: "1MJY4td932qmFxH6FBQrpnySZBizV67rRC", BcnValue: "0.1", IsListed: "true",	AuctionStartTime: "1505591349", AuctionEndTime: "1506184000", HighestBidderId: "1MJY4td932qmFxH6FBQrpnySZBizV67rRC", StartingBid: "0.1"},
+		Art{ Name: "Lion", 	Author: "Shimhaq", Description: "A colorful image of a lion", 	OwnerID: "1MJY4td932qmFxH6FBQrpnySZBizV67rRC", BcnValue: "0.2", IsListed: "true",	AuctionStartTime: "1505591349", AuctionEndTime: "1505684000", HighestBidderId: "1MJY4td932qmFxH6FBQrpnySZBizV67rRC", StartingBid: "0.15"},
 	}
 
 	i := 0
@@ -142,7 +146,6 @@ func (s *SmartContract) list(APIstub shim.ChaincodeStubInterface, args []string)
 }
 
 func (s *SmartContract) queryAllArt(APIstub shim.ChaincodeStubInterface) sc.Response {
-	// TODO: this might be bad, do not know yet how query works
 	startKey := "000000000000000000000000000000000"
 	endKey := "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
 
@@ -184,17 +187,24 @@ func (s *SmartContract) queryAllArt(APIstub shim.ChaincodeStubInterface) sc.Resp
 	return shim.Success(buffer.Bytes())
 }
 
-func (s *SmartContract) purchase(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+func (s *SmartContract) endAuction(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 
-	if len(args) != 2 {
-		return shim.Error("Incorrect number of arguments. Expecting 2")
+	if len(args) != 1 {
+		return shim.Error("Incorrect number of arguments. Expecting 1")
 	}
 
 	artAsBytes, _ := APIstub.GetState(args[0])
 	art := Art{}
 
 	json.Unmarshal(artAsBytes, &art)
-	art.OwnerID = args[1]
+	if(art.HighestBidderId != ""){
+		art.OwnerID = art.HighestBidderId
+	}
+	art.IsListed = "false"
+	art.AuctionStartTime = ""
+	art.AuctionEndTime = ""
+	art.HighestBidderId = ""
+	art.StartingBid = ""
 
 	artAsBytes, _ = json.Marshal(art)
 	APIstub.PutState(args[0], artAsBytes)
@@ -238,6 +248,45 @@ func (s *SmartContract) setPrice(APIstub shim.ChaincodeStubInterface, args []str
 	return shim.Success(nil)
 }
 
+func (s *SmartContract) setUpAuction(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+
+	if len(args) != 4 {
+		return shim.Error("Incorrect number of arguments. Expecting 4")
+	}
+
+	artAsBytes, _ := APIstub.GetState(args[0])
+	art := Art{}
+
+	json.Unmarshal(artAsBytes, &art)
+	art.AuctionStartTime = args[1]
+	art.AuctionEndTime = args[2]
+	art.StartingBid = args[3]
+
+	artAsBytes, _ = json.Marshal(art)
+	APIstub.PutState(args[0], artAsBytes)
+
+	return shim.Success(nil)
+}
+
+func (s *SmartContract) bid(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+
+	if len(args) != 3 {
+		return shim.Error("Incorrect number of arguments. Expecting 3")
+	}
+
+	artAsBytes, _ := APIstub.GetState(args[0])
+	art := Art{}
+
+	json.Unmarshal(artAsBytes, &art)
+	art.HighestBidderId = args[1]
+	art.BcnValue = args[2]
+
+	artAsBytes, _ = json.Marshal(art)
+	APIstub.PutState(args[0], artAsBytes)
+
+	return shim.Success(nil)
+}
+
 // The main function is only relevant in unit test mode. Only included here for completeness.
 func main() {
 
@@ -247,3 +296,4 @@ func main() {
 		fmt.Printf("Error creating new Smart Contract: %s", err)
 	}
 }
+
