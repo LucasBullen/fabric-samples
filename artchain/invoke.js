@@ -55,7 +55,7 @@ Promise.resolve().then(() => {
     return;
 }).then(() => {
     tx_id = client.newTransactionID();
-   // console.log("Assigning transaction_id: ", tx_id._transaction_id);
+    console.log("Assigning transaction_id: ", tx_id._transaction_id);
     var request = {
         targets: targets,
         chaincodeId: options.chaincode_id,
